@@ -1,0 +1,5 @@
+# Las preguntas NO se suben: el repo es público. Viven en Supabase.
+preguntas/
+dist/
+*.generated.sql
+.env

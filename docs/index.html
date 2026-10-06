@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src https://parnrdgtseefaacwzmvj.supabase.co; base-uri 'none'; form-action 'none'">
+<title>Quiz Diplomado SENIAT</title>
+<style>
+/* Una columna de lectura, tono de papel timbrado: tinta azul marino, nota final como sello. Sin fuentes externas. */
+:root{
+  --bg:#eef1f6;--surface:#ffffff;--surface-2:#f6f8fb;--fg:#0f1f38;--muted:#52627d;--line:#d2d9e5;
+  --accent:#1b57b3;--accent-fg:#ffffff;--accent-soft:#e3ecfa;--gold:#8a5a00;
+  --ok:#14663b;--ok-bg:#e0f3e8;--bad:#a02424;--bad-bg:#fbe5e5;--warn-bg:#fff3d6;
+  --display:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b1322;--surface:#131f36;--surface-2:#182744;--fg:#e6ecf8;--muted:#9aaccb;--line:#2a3b5d;
+  --accent:#78acf4;--accent-fg:#0a1428;--accent-soft:#1c2f55;--gold:#e5b95f;
+  --ok:#74d9a0;--ok-bg:#133425;--bad:#f2a0a0;--bad-bg:#3a1c22;--warn-bg:#3a3014;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1322;--surface:#131f36;--surface-2:#182744;--fg:#e6ecf8;--muted:#9aaccb;--line:#2a3b5d;
+  --accent:#78acf4;--accent-fg:#0a1428;--accent-soft:#1c2f55;--gold:#e5b95f;
+  --ok:#74d9a0;--ok-bg:#133425;--bad:#f2a0a0;--bad-bg:#3a1c22;--warn-bg:#3a3014;color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);padding-inline:16px;padding-block:20px 48px}
+h1,h2,h3{font-family:var(--display);line-height:1.2;margin:0;text-wrap:balance;font-weight:700}
+h1{font-size:clamp(1.6rem,5vw,2.1rem)}h2{font-size:1.3rem}h3{font-size:1.05rem}
+p{margin:0}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.sub{color:var(--muted);margin-top:6px;max-width:60ch}
+.who{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted);min-width:0}
+.who span{overflow-wrap:anywhere}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tab{font:inherit;cursor:pointer;border:1px solid transparent;background:none;color:var(--muted);padding:8px 14px;border-radius:8px;font-weight:500}
+.tab:hover{color:var(--fg);background:var(--surface-2)}
+.tab[aria-selected="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card.flat{background:var(--surface-2)}
+button{font:inherit}
+.btn{cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:10px 16px;min-height:44px;font-weight:500}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent);font-weight:600}
+.btn.quiet{border-color:transparent;background:none;color:var(--muted);min-height:36px;padding:6px 10px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;background:var(--surface-2);min-height:40px}
+.chip:has(input:checked){background:var(--accent-soft);border-color:var(--accent)}
+.chip input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.chip small{color:var(--muted)}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:500;min-width:0}
+input[type=number],input[type=text],input[type=email],select,textarea{font:inherit;background:var(--surface-2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-height:44px}
+textarea{min-height:100px;resize:vertical}
+input.code{font-family:var(--mono);font-size:1.6rem;letter-spacing:.35em;text-align:center}
+.hint{font-size:.9rem;color:var(--muted)}
+.msg{font-size:.92rem;min-height:1.4em}
+.msg.err{color:var(--bad)}.msg.good{color:var(--ok)}
+.notice{background:var(--warn-bg);border:1px solid var(--gold);border-radius:8px;padding:10px 14px;font-size:.92rem}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{flex:1 1 200px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;background:var(--surface-2)}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.seg input{accent-color:var(--accent);margin-top:4px}
+.seg b{display:block}.seg small{color:var(--muted)}
+.meta{display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;color:var(--muted);font-size:.88rem}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.tag{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.q{font-family:var(--display);font-size:1.22rem;line-height:1.4;font-weight:600;outline:none;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface);color:var(--fg);cursor:pointer;width:100%;min-height:48px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font:600 .75rem var(--mono);color:var(--muted)}
+.opt.multi .k{border-radius:6px}
+.opt[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.opt[aria-pressed="true"] .k{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok)}.opt.ok .k{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad)}.opt.bad .k{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.opt:disabled{cursor:default;opacity:1}
+.explain{border-left:4px solid var(--accent);padding:6px 0 6px 14px;display:flex;flex-direction:column;gap:4px}
+.explain.ok{border-color:var(--ok)}.explain.bad{border-color:var(--bad)}
+.flag{display:inline-flex;gap:8px;align-items:center;cursor:pointer;color:var(--muted);font-size:.9rem;min-height:36px}
+.flag input{accent-color:var(--gold);width:16px;height:16px}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);font:600 .72rem var(--mono);color:var(--muted);cursor:pointer;display:grid;place-items:center;padding:0}
+.dot.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.dot.cur{outline:2px solid var(--fg);outline-offset:1px}
+.dot.flagged{box-shadow:inset 0 -3px 0 var(--gold)}
+.result{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.stamp{flex:none;border:3px double var(--accent);color:var(--accent);border-radius:10px;padding:10px 20px 8px;text-align:center;transform:rotate(-3deg);line-height:1}
+.stamp small{display:block;font:600 .68rem var(--body);letter-spacing:.25em;text-transform:uppercase;margin-bottom:4px}
+.stamp b{font:700 3rem var(--display);font-variant-numeric:tabular-nums}
+.stamp i{font:normal 600 1.2rem var(--display)}
+.verdict{font-weight:600}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mini{height:8px;border-radius:4px;background:var(--line);min-width:80px;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--ok)}
+.mini.low i{background:var(--bad)}
+.rev{border-left:4px solid var(--bad);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.rev.good{border-color:var(--ok)}
+.qitem{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding:10px 0}
+.qitem>span{min-width:0;overflow-wrap:anywhere}
+details>summary{cursor:pointer;font-weight:600;padding:8px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.gate{max-width:460px;margin-inline:auto;width:100%}
+@media (max-width:480px){.card{padding:16px}.stamp b{font-size:2.5rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Diplomado de fiscalización · SENIAT</p>
+      <h1>Quiz de práctica</h1>
+      <p class="sub">Las respuestas se justifican con el resumen de estudio de las Clases 1 a 6. Nota final sobre 20.</p>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Secciones" id="tabs" hidden></nav>
+  <main id="app" aria-live="polite"></main>
+  <noscript><p class="notice">Este quiz necesita JavaScript activado.</p></noscript>
+</div>
+<script>
+'use strict';
+const CFG={"url":"https://parnrdgtseefaacwzmvj.supabase.co","key":"sb_publishable_Cp0MRsAL27f5TAd6N9uI2A_NcjBS5M9"};
+const DATA=null;
+const ONLINE_MODE=!DATA;
+const K={extra:'seniat-quiz-extra-v1',prog:'seniat-quiz-prog-v1',run:'seniat-quiz-run-v1',hist:'seniat-quiz-hist-v1',sess:'seniat-quiz-sess-v1',theme:'seniat-quiz-theme-v1',email:'seniat-quiz-email-v1'};
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+  del(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,a={},...k)=>{const e=document.createElement(t);for(const[x,v]of Object.entries(a)){if(v===false||v==null)continue;if(x==='class')e.className=v;else if(x.startsWith('on'))e[x]=v;else if(v===true)e.setAttribute(x,'');else e.setAttribute(x,v)}k.flat(9).forEach(c=>{if(c==null||c===false)return;e.append(c.nodeType?c:document.createTextNode(c))});return e};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L='ABCDEFGH';
+const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)};
+const qk=q=>q.clase+':'+hash(q.q);
+const correct=q=>Array.isArray(q.a)?q.a:[q.a];
+const isOk=(q,s)=>{const c=correct(q);return s.length===c.length&&c.every(x=>s.includes(x))};
+const fmtDate=d=>new Date(d).toLocaleDateString('es-VE',{day:'numeric',month:'long',year:'numeric'});
+
+/* ---------- tema ---------- */
+function applyTheme(t){const r=document.documentElement;if(t==='light'||t==='dark')r.setAttribute('data-theme',t);else r.removeAttribute('data-theme')}
+applyTheme(store.get(K.theme,'auto'));
+
+/* ---------- acceso (solo versión en línea) ---------- */
+const auth={
+  session:ONLINE_MODE?store.get(K.sess,null):null,
+  async api(path,{body,token,method='POST'}={}){
+    const h={apikey:CFG.key,'Content-Type':'application/json'};
+    if(token)h.Authorization='Bearer '+token;
+    let r;
+    try{r=await fetch(CFG.url+path,{method,headers:h,body:body?JSON.stringify(body):undefined})}
+    catch(e){throw {status:0,msg:'Sin conexión. Revisa tu internet e inténtalo de nuevo.'}}
+    let j={};try{j=await r.json()}catch(e){}
+    if(!r.ok)throw {status:r.status,code:j.error_code||j.code,msg:j.msg||j.message||j.error_description||j.error||('Error '+r.status)};
+    return j;
+  },
+  save(s){if(!s){this.session=null;store.del(K.sess);return}const n={access_token:s.access_token,refresh_token:s.refresh_token,expires_at:s.expires_at||Math.floor(Date.now()/1000)+(s.expires_in||3600),email:(s.user&&s.user.email)||s.email||''};this.session=n;store.set(K.sess,n)},
+  async token(){
+    const s=this.session;if(!s)return null;
+    if(s.expires_at-30>Date.now()/1000)return s.access_token;
+    try{const j=await this.api('/auth/v1/token?grant_type=refresh_token',{body:{refresh_token:s.refresh_token}});j.email=s.email;this.save(j);return j.access_token}
+    catch(e){if(e.status===0)throw e;this.save(null);return null}
+  },
+  sendCode:email=>auth.api('/auth/v1/otp',{body:{email,create_user:true}}),
+  async verify(email,token){const j=await auth.api('/auth/v1/verify',{body:{type:'email',email,token}});j.email=email;auth.save(j);return j},
+  async rpc(name){const t=await this.token();if(!t)throw {status:401,msg:'Sesión vencida.'};return this.api('/rest/v1/rpc/'+name,{token:t,body:{}})},
+  async questions(){
+    const t=await this.token();if(!t)throw {status:401,msg:'Sesión vencida.'};
+    return this.api('/rest/v1/questions?select=id,clase,tema,tipo,q,o,a,e&order=clase.asc,id.asc',{token:t,method:'GET'});
+  },
+  async logout(){const t=this.session&&this.session.access_token;try{if(t)await this.api('/auth/v1/logout',{token:t})}catch(e){}this.save(null)}
+};
+let remote=null;      // preguntas descargadas tras iniciar sesión (solo en memoria)
+let access=null;      // {allowed, expires_at}
+
+/* ---------- banco ---------- */
+let extra=store.get(K.extra,[]);if(!Array.isArray(extra))extra=[];
+const saveExtra=()=>store.set(K.extra,extra);
+const bank=()=>(DATA||remote||[]).concat(extra);
+const classesList=()=>[...new Set(bank().map(q=>q.clase))].sort((a,b)=>a-b);
+
+/* ---------- progreso local ---------- */
+let prog=store.get(K.prog,{});if(!prog||typeof prog!=='object')prog={};
+let hist=store.get(K.hist,[]);if(!Array.isArray(hist))hist=[];
+const saveProg=()=>{store.set(K.prog,prog);store.set(K.hist,hist.slice(-40))};
+
+/* ---------- estado ---------- */
+const st={tab:'quiz',classes:null,n:20,mode:'examen',source:'all',flagsOnly:false,filter:'all'};
+let run=null;
+const app=$('#app');
+
+function saveRun(){
+  if(!run){store.del(K.run);return}
+  store.set(K.run,{keys:run.qs.map(qk),order:run.order,ans:run.ans,flags:run.flags,checked:run.checked,i:run.i,mode:run.mode,done:run.done});
+}
+function loadRun(){
+  const r=store.get(K.run,null);if(!r||!Array.isArray(r.keys))return null;
+  const map=new Map(bank().map(q=>[qk(q),q]));
+  const qs=r.keys.map(k=>map.get(k));
+  if(!qs.length||qs.some(q=>!q))return null;
+  return {qs,order:r.order,ans:r.ans,flags:r.flags||qs.map(()=>false),checked:r.checked||qs.map(()=>false),i:r.i||0,mode:r.mode||'examen',done:!!r.done};
+}
+
+/* ---------- navegación ---------- */
+function chrome(){
+  const authed=!ONLINE_MODE?true:(auth.session&&access&&access.allowed&&remote);
+  const tabs=$('#tabs');tabs.hidden=!authed;tabs.replaceChildren();
+  if(authed){[['quiz','Practicar'],['progress','Mi progreso'],['bank','Mi banco']].forEach(([id,lab])=>{
+    tabs.append(el('button',{class:'tab',role:'tab','aria-selected':String(st.tab===id),onclick:()=>{st.tab=id;render()}},lab))})}
+  const who=$('#who');who.replaceChildren();
+  const th=el('button',{class:'btn quiet',type:'button','aria-label':'Cambiar tema de color',onclick:()=>{const cur=store.get(K.theme,'auto');const nx=cur==='auto'?'dark':cur==='dark'?'light':'auto';store.set(K.theme,nx);applyTheme(nx);th.textContent='Tema: '+({auto:'auto',dark:'oscuro',light:'claro'})[nx]}},'Tema: '+({auto:'auto',dark:'oscuro',light:'claro'})[store.get(K.theme,'auto')]);
+  who.append(th);
+  if(ONLINE_MODE&&auth.session){who.append(el('span',{},auth.session.email||''),el('button',{class:'btn quiet',type:'button',onclick:async()=>{await auth.logout();remote=null;access=null;run=null;st.tab='quiz';render()}},'Salir'))}
+}
+function render(){
+  chrome();
+  app.replaceChildren();
+  if(ONLINE_MODE&&!(auth.session&&access&&access.allowed&&remote))return gateOrBoot();
+  if(st.tab==='bank')return bankView();
+  if(st.tab==='progress')return progressView();
+  if(!run)return setup();
+  if(run.done)return results();
+  question();
+}
+
+/* ---------- pantalla de acceso ---------- */
+let gate={step:'email',email:store.get(K.email,''),msg:'',err:false,busy:false,wait:0,timer:null};
+async function gateOrBoot(){
+  if(auth.session&&!gate.booting){
+    gate.booting=true;
+    app.append(el('section',{class:'card gate'},el('p',{},'Verificando tu acceso…')));
+    try{
+      access=await auth.rpc('my_access');
+      if(access&&access.allowed){remote=await auth.questions();gate.booting=false;return render()}
+      gate.booting=false;return expired();
+    }catch(e){
+      gate.booting=false;
+      if(e.status===401||e.status===403){auth.save(null);gate.msg='Tu sesión venció. Inicia sesión de nuevo.';gate.err=true;gate.step='email';return render()}
+      gate.msg=e.msg||'No se pudo verificar el acceso.';gate.err=true;
+      return app.append(el('section',{class:'card gate'},el('h2',{},'No se pudo cargar el quiz'),el('p',{class:'msg err'},gate.msg),el('button',{class:'btn primary',onclick:()=>render()},'Reintentar')));
+    }
+  }
+  if(auth.session)return;
+  gateView();
+}
+function expired(){
+  const exp=access&&access.expires_at;
+  app.replaceChildren(el('section',{class:'card gate'},el('h2',{},'Tu acceso terminó'),
+    el('p',{},exp?`Tu acceso venció el ${fmtDate(exp)}.`:'Este correo ya no tiene acceso al quiz.'),
+    el('p',{class:'hint'},'Si necesitas más tiempo, pídele a quien administra el quiz que lo extienda.'),
+    el('button',{class:'btn',onclick:async()=>{await auth.logout();access=null;render()}},'Usar otro correo')));
+}
+function gateView(){
+  const msg=el('p',{class:'msg'+(gate.err?' err':gate.msg?' good':''),role:'status'},gate.msg);
+  const card=el('section',{class:'card gate'});
+  if(gate.step==='email'){
+    const em=el('input',{type:'email',id:'em',autocomplete:'email',inputmode:'email',required:true,placeholder:'tucorreo@ejemplo.com',value:gate.email});
+    const go=el('button',{class:'btn primary',type:'submit'},'Enviar código');
+    const form=el('form',{class:'row',style:'flex-direction:column;align-items:stretch;gap:14px'},
+      el('label',{class:'f',for:'em'},'Tu correo',em),go);
+    form.onsubmit=async ev=>{ev.preventDefault();const v=em.value.trim().toLowerCase();if(!v)return;
+      go.disabled=true;go.textContent='Enviando…';
+      try{await auth.sendCode(v);gate.email=v;store.set(K.email,v);gate.step='code';gate.msg='Te enviamos un código. Revisa también la carpeta de spam.';gate.err=false;startWait();render()}
+      catch(e){gate.msg=e.status===429?'Pediste un código hace poco. Espera un minuto e inténtalo de nuevo.':e.status===0?e.msg:e.status>=500?'No se pudo enviar el código. Inténtalo en unos minutos.':'Ese correo no tiene acceso. Si es el correo que diste, pide que lo revisen.';gate.err=true;render()}};
+    card.append(el('h2',{},'Entrar al quiz'),el('p',{class:'hint'},'Escribe el correo que le diste a quien administra el quiz. Te llegará un código de un solo uso. No necesitas crear cuenta ni contraseña.'),form,msg);
+  }else{
+    const cd=el('input',{type:'text',id:'cd',class:'code',inputmode:'numeric',autocomplete:'one-time-code',pattern:'[0-9]{6,10}',maxlength:'10',required:true,'aria-label':'Código de verificación'});
+    const go=el('button',{class:'btn primary',type:'submit'},'Entrar');
+    const form=el('form',{style:'display:flex;flex-direction:column;gap:14px'},el('label',{class:'f',for:'cd'},`Código enviado a ${gate.email}`,cd),go);
+    form.onsubmit=async ev=>{ev.preventDefault();go.disabled=true;go.textContent='Verificando…';
+      try{await auth.verify(gate.email,cd.value.replace(/\D/g,''));gate.msg='';gate.err=false;gate.step='email';render()}
+      catch(e){gate.msg=e.status===0?e.msg:'El código no es correcto o ya venció. Pide uno nuevo.';gate.err=true;render()}};
+    const resend=el('button',{class:'btn quiet',type:'button',id:'rs'},gate.wait>0?`Reenviar código (${gate.wait} s)`:'Reenviar código');
+    resend.disabled=gate.wait>0;
+    resend.onclick=async()=>{resend.disabled=true;try{await auth.sendCode(gate.email);gate.msg='Código reenviado.';gate.err=false;startWait()}catch(e){gate.msg=e.status===429?'Espera un momento antes de pedir otro código.':(e.msg||'No se pudo reenviar.');gate.err=true}render()};
+    const back=el('button',{class:'btn quiet',type:'button',onclick:()=>{gate.step='email';gate.msg='';render()}},'Cambiar correo');
+    card.append(el('h2',{},'Escribe tu código'),form,msg,el('div',{class:'row'},resend,back));
+    setTimeout(()=>cd.focus(),0);
+  }
+  app.append(card);
+}
+function startWait(){gate.wait=60;clearInterval(gate.timer);gate.timer=setInterval(()=>{gate.wait--;const b=$('#rs');if(b){b.textContent=gate.wait>0?`Reenviar código (${gate.wait} s)`:'Reenviar código';b.disabled=gate.wait>0}if(gate.wait<=0)clearInterval(gate.timer)},1000)}
+
+/* ---------- configuración ---------- */
+function setup(){
+  if(!st.classes)st.classes=classesList();
+  const saved=loadRun();
+  const b=bank();
+  const chips=el('div',{class:'chips'});
+  classesList().forEach(c=>{
+    const n=b.filter(q=>q.clase===c).length;
+    const cb=el('input',{type:'checkbox',id:'c'+c});cb.checked=st.classes.includes(c);
+    cb.onchange=()=>{st.classes=classesList().filter(x=>x===c?cb.checked:st.classes.includes(x));upd()};
+    chips.append(el('label',{class:'chip',for:'c'+c},cb,`Clase ${c}`,el('small',{},`(${n})`)))});
+  const all=el('button',{class:'btn quiet',type:'button',onclick:()=>{st.classes=classesList();render()}},'Marcar todas');
+  const none=el('button',{class:'btn quiet',type:'button',onclick:()=>{st.classes=[];render()}},'Quitar todas');
+  const num=el('input',{type:'number',id:'num',min:1,max:300,value:st.n,inputmode:'numeric'});
+  num.oninput=()=>{st.n=Math.max(1,Math.min(300,+num.value||1));upd()};
+  const src=el('select',{id:'src'},
+    el('option',{value:'all'},'Todas las preguntas'),
+    el('option',{value:'wrong'},'Solo las que he fallado antes'),
+    el('option',{value:'new'},'Solo las que no he visto'),
+    el('option',{value:'weak'},'Fallo reciente o sin ver'));
+  src.value=st.source;src.onchange=()=>{st.source=src.value;upd()};
+  const modeBox=el('div',{class:'seg',role:'radiogroup','aria-label':'Modo'});
+  [['examen','Examen','Ves la nota y las explicaciones al final.'],['estudio','Estudio','Compruebas cada respuesta y ves la explicación al instante.']].forEach(([v,t,d])=>{
+    const r=el('input',{type:'radio',name:'mode',value:v,id:'m-'+v});r.checked=st.mode===v;r.onchange=()=>{st.mode=v};
+    modeBox.append(el('label',{for:'m-'+v},r,el('span',{},el('b',{},t),el('small',{},d))))});
+  const info=el('p',{class:'msg',id:'info'});
+  const go=el('button',{class:'btn primary',id:'go',type:'button'},'Comenzar');
+  function pool(){
+    let p=b.filter(q=>st.classes.includes(q.clase));
+    const s=q=>prog[qk(q)];
+    if(st.source==='wrong')p=p.filter(q=>s(q)&&s(q).bad>0);
+    if(st.source==='new')p=p.filter(q=>!s(q));
+    if(st.source==='weak')p=p.filter(q=>!s(q)||s(q).last===0);
+    return p}
+  function upd(){const a=pool().length;info.textContent=a?`${a} preguntas disponibles. Se usarán ${Math.min(st.n,a)}.`:'No hay preguntas con esa selección.';go.disabled=!a}
+  go.onclick=()=>start(shuffle(pool()).slice(0,st.n),st.mode);
+  const cards=[];
+  if(saved&&!saved.done){
+    const answered=saved.ans.filter(a=>a.length).length;
+    cards.push(el('section',{class:'card flat'},el('h2',{},'Tienes un quiz en curso'),
+      el('p',{class:'hint'},`Pregunta ${saved.i+1} de ${saved.qs.length}, ${answered} respondidas. Modo ${saved.mode}.`),
+      el('div',{class:'row'},el('button',{class:'btn primary',onclick:()=>{run=saved;render()}},'Continuar'),el('button',{class:'btn',onclick:()=>{store.del(K.run);render()}},'Descartar'))));
+  }
+  if(access&&access.expires_at){
+    const days=Math.ceil((new Date(access.expires_at)-Date.now())/864e5);
+    if(days<=14)cards.push(el('p',{class:'notice'},days<=0?'Tu acceso vence hoy.':`Tu acceso vence en ${days} día${days===1?'':'s'} (${fmtDate(access.expires_at)}).`));
+  }
+  cards.push(el('section',{class:'card'},el('h2',{},'Configura tu práctica'),
+    el('div',{style:'display:flex;flex-direction:column;gap:8px'},el('div',{class:'row'},el('span',{class:'hint grow'},'Clases a incluir'),all,none),chips),
+    el('div',{class:'row'},el('label',{class:'f grow',for:'num'},'Número de preguntas',num),el('label',{class:'f grow',for:'src'},'Qué preguntas',src)),
+    el('div',{style:'display:flex;flex-direction:column;gap:8px'},el('span',{class:'hint'},'Modo'),modeBox),
+    info,go,
+    el('p',{class:'hint'},'Hay preguntas de selección simple, de selección múltiple (cuentan solo si marcas todas las correctas y ninguna incorrecta) y de verdadero o falso. Atajos: 1-4 o A-D para elegir, Enter para avanzar, flechas para moverte.')));
+  app.append(...cards);upd();
+}
+function start(qs,mode){
+  if(!qs.length)return;
+  run={qs,order:qs.map(q=>q.tipo==='tf'?q.o.map((_,i)=>i):shuffle(q.o.map((_,i)=>i))),ans:qs.map(()=>[]),flags:qs.map(()=>false),checked:qs.map(()=>false),i:0,mode,done:false};
+  saveRun();render();
+}
+
+/* ---------- pregunta ---------- */
+function question(keep){
+  const i=run.i,q=run.qs[i],multi=q.tipo==='multi',sel=run.ans[i];
+  const study=run.mode==='estudio',locked=study&&run.checked[i];
+  const opts=el('div',{class:'opts',role:multi?'group':'radiogroup','aria-labelledby':'qtext'});
+  run.order[i].forEach((oi,pos)=>{
+    let cls='opt'+(multi?' multi':'');
+    if(locked){const c=correct(q).includes(oi);if(c)cls+=' ok';else if(sel.includes(oi))cls+=' bad'}
+    const b=el('button',{class:cls,type:'button','aria-pressed':String(sel.includes(oi)),disabled:locked,'data-pos':pos},
+      el('span',{class:'k','aria-hidden':'true'},q.tipo==='tf'?'':L[pos]),el('span',{},q.o[oi]));
+    b.onclick=()=>choose(oi);opts.append(b)});
+  const last=i===run.qs.length-1;
+  const nextLabel=study&&!locked?'Comprobar':last?'Terminar y ver nota':'Siguiente';
+  const next=el('button',{class:'btn primary',id:'next',type:'button'},nextLabel);
+  next.disabled=study&&!locked&&!sel.length; // en modo examen se puede avanzar sin responder y cuenta como incorrecta
+  next.onclick=advance;
+  const pending=run.ans.filter(a=>!a.length).length;
+  const prev=el('button',{class:'btn',type:'button',onclick:()=>go(i-1)},'Anterior');prev.disabled=i===0;
+  const quit=el('button',{class:'btn quiet',type:'button',onclick:()=>{run=null;store.del(K.run);render()}},'Abandonar');
+  const flag=el('input',{type:'checkbox',id:'flag'});flag.checked=run.flags[i];flag.onchange=()=>{run.flags[i]=flag.checked;saveRun();dots()};
+  const dotsBox=el('div',{class:'dots','aria-label':'Mapa de preguntas'});
+  function dots(){dotsBox.replaceChildren(...run.qs.map((_,j)=>el('button',{type:'button',class:'dot'+(run.ans[j].length?' done':'')+(j===run.i?' cur':'')+(run.flags[j]?' flagged':''),'aria-label':`Ir a la pregunta ${j+1}${run.flags[j]?' (marcada)':''}`,onclick:()=>go(j)},String(j+1))))}
+  dots();
+  let fb=null;
+  if(locked){const ok=isOk(q,sel);fb=el('div',{class:'explain '+(ok?'ok':'bad'),role:'status'},el('strong',{},ok?'Correcta':'Incorrecta'),
+    ok?null:el('span',{},'Respuesta correcta: '+correct(q).map(x=>q.o[x]).join('; ')),el('span',{class:'hint'},q.e))}
+  app.append(el('section',{class:'card'},
+    el('div',{class:'meta'},el('span',{},`Pregunta ${i+1} de ${run.qs.length}`),el('span',{},`Clase ${q.clase} · ${q.tema}`)),
+    el('div',{class:'bar',role:'progressbar','aria-valuemin':'0','aria-valuemax':String(run.qs.length),'aria-valuenow':String(run.ans.filter(a=>a.length).length),'aria-label':'Preguntas respondidas'},el('i',{style:`width:${run.ans.filter(a=>a.length).length/run.qs.length*100}%`})),
+    el('h2',{class:'q',id:'qtext',tabindex:'-1'},q.q),
+    multi?el('p',{class:'hint'},'Marca todas las que correspondan.'):null,
+    opts,fb,
+    el('label',{class:'flag',for:'flag'},flag,'Marcar para revisar'),
+    last&&pending?el('p',{class:'hint'},`Te faltan ${pending} pregunta${pending===1?'':'s'} sin responder. Cuentan como incorrectas.`):null,
+    el('div',{class:'row'},prev,next,quit),dotsBox));
+  if(!keep){const h=$('#qtext');if(h)h.focus({preventScroll:true});window.scrollTo({top:0})}
+}
+function choose(oi){
+  const i=run.i,q=run.qs[i];if(run.mode==='estudio'&&run.checked[i])return;
+  const sel=run.ans[i];
+  run.ans[i]=q.tipo==='multi'?(sel.includes(oi)?sel.filter(x=>x!==oi):sel.concat(oi)):[oi];
+  saveRun();redraw(run.order[i].indexOf(oi));
+}
+function redraw(pos){
+  const y=window.scrollY;app.replaceChildren();question(true);window.scrollTo({top:y});
+  const b=app.querySelector('[data-pos="'+pos+'"]');if(b&&!b.disabled)b.focus({preventScroll:true});
+}
+function advance(){
+  const i=run.i;
+  if(run.mode==='estudio'&&!run.checked[i]){run.checked[i]=true;saveRun();const y=window.scrollY;app.replaceChildren();question(true);window.scrollTo({top:y});const nb=$('#next');if(nb)nb.focus({preventScroll:true});return}
+  if(i===run.qs.length-1)return finish();
+  go(i+1);
+}
+function go(j){if(j<0||j>=run.qs.length)return;run.i=j;saveRun();app.replaceChildren();question()}
+function finish(){
+  const ok=run.qs.map((q,i)=>isOk(q,run.ans[i]));
+  run.qs.forEach((q,i)=>{if(!run.ans[i].length)return;const k=qk(q),s=prog[k]||{ok:0,bad:0,last:1};if(ok[i])s.ok++;else s.bad++;s.last=ok[i]?1:0;prog[k]=s});
+  const n=ok.filter(Boolean).length;
+  hist.push({ts:Date.now(),g:Math.round(n/run.qs.length*200)/10,n,tot:run.qs.length,mode:run.mode});
+  saveProg();run.done=true;st.filter='all';saveRun();render();
+}
+
+/* ---------- resultados ---------- */
+function results(){
+  const ok=run.qs.map((q,i)=>isOk(q,run.ans[i])),n=ok.filter(Boolean).length,tot=run.qs.length;
+  const g=Math.round(n/tot*200)/10;
+  const v=g>=18?'Excelente.':g>=15?'Muy bien.':g>=10?'Aprobado. Repasa los temas fallados.':'Por debajo de 10. Vuelve a leer el resumen de las clases con más fallos.';
+  const byC={},byT={};
+  run.qs.forEach((q,i)=>{const a=byC['Clase '+q.clase]=byC['Clase '+q.clase]||[0,0];a[1]++;if(ok[i])a[0]++;const t='Clase '+q.clase+' · '+q.tema;const b=byT[t]=byT[t]||[0,0];b[1]++;if(ok[i])b[0]++});
+  const pct=(a,b)=>Math.round(a/b*100);
+  const tb=el('table',{},el('thead',{},el('tr',{},el('th',{},'Clase'),el('th',{},'Aciertos'),el('th',{},'%'),el('th',{},''))),
+    el('tbody',{},Object.entries(byC).sort().map(([k,[a,b]])=>el('tr',{},el('td',{},k),el('td',{},`${a} / ${b}`),el('td',{},pct(a,b)+'%'),el('td',{},el('div',{class:'mini'+(pct(a,b)<60?' low':'')},el('i',{style:`width:${pct(a,b)}%`})))))));
+  const weak=Object.entries(byT).filter(([,[a,b]])=>a<b).sort((x,y)=>x[1][0]/x[1][1]-y[1][0]/y[1][1]).slice(0,5);
+  const again=el('button',{class:'btn primary',onclick:()=>{run=null;store.del(K.run);render()}},'Nueva práctica');
+  const redo=el('button',{class:'btn',onclick:()=>{const f=run.qs.filter((q,i)=>!ok[i]);start(shuffle(f),run.mode)}},`Repetir las falladas (${tot-n})`);redo.disabled=n===tot;
+  const fl=run.flags.filter(Boolean).length;
+  const redoF=el('button',{class:'btn',onclick:()=>{start(run.qs.filter((q,i)=>run.flags[i]),run.mode)}},`Repetir las marcadas (${fl})`);redoF.disabled=!fl;
+  const sel=el('select',{id:'flt','aria-label':'Filtrar revisión'},el('option',{value:'all'},'Todas'),el('option',{value:'bad'},'Solo incorrectas'),el('option',{value:'flag'},'Solo marcadas'));
+  sel.value=st.filter;
+  const list=el('div',{style:'display:flex;flex-direction:column;gap:16px'});
+  const drawList=()=>{list.replaceChildren();run.qs.forEach((q,i)=>{
+    if(st.filter==='bad'&&ok[i])return;if(st.filter==='flag'&&!run.flags[i])return;
+    const mine=run.ans[i].map(x=>q.o[x]).join('; ')||'(sin respuesta)';
+    list.append(el('div',{class:'rev'+(ok[i]?' good':'')},el('span',{class:'tag'},`${ok[i]?'Correcta':'Incorrecta'} · Clase ${q.clase} · ${q.tema}${run.flags[i]?' · marcada':''}`),el('strong',{},q.q),
+      ok[i]?null:el('span',{},'Tu respuesta: '+mine),el('span',{},'Respuesta correcta: '+correct(q).map(x=>q.o[x]).join('; ')),el('span',{class:'hint'},q.e)))});
+    if(!list.children.length)list.append(el('p',{class:'hint'},'No hay preguntas con ese filtro.'))};
+  sel.onchange=()=>{st.filter=sel.value;drawList()};drawList();
+  app.append(
+    el('section',{class:'card'},el('h2',{},'Resultado'),
+      el('div',{class:'result'},el('div',{class:'stamp'},el('small',{},'Nota'),el('b',{},g.toFixed(1).replace('.',',')),el('i',{},' / 20')),
+        el('div',{},el('p',{},`${n} de ${tot} correctas`),el('p',{class:'verdict'},v))),
+      el('div',{class:'scroll'},tb),
+      weak.length?el('div',{},el('h3',{},'Temas para repasar'),el('ul',{style:'margin:8px 0 0;padding-left:20px'},weak.map(([t,[a,b]])=>el('li',{},`${t}: ${a} de ${b}`)))):null,
+      el('div',{class:'row'},again,redo,redoF)),
+    el('section',{class:'card'},el('div',{class:'row'},el('h2',{class:'grow'},'Revisión'),sel),list));
+  window.scrollTo({top:0});
+}
+
+/* ---------- progreso ---------- */
+function progressView(){
+  const b=bank(),rows=classesList().map(c=>{const qs=b.filter(q=>q.clase===c);let seen=0,good=0;qs.forEach(q=>{const s=prog[qk(q)];if(s){seen++;if(s.last===1)good++}});return {c,tot:qs.length,seen,good}});
+  const tb=el('table',{},el('thead',{},el('tr',{},el('th',{},'Clase'),el('th',{},'Vistas'),el('th',{},'Bien en el último intento'),el('th',{},''))),
+    el('tbody',{},rows.map(r=>{const p=r.seen?Math.round(r.good/r.seen*100):0;return el('tr',{},el('td',{},'Clase '+r.c),el('td',{},`${r.seen} / ${r.tot}`),el('td',{},r.seen?p+'%':'—'),el('td',{},el('div',{class:'mini'+(r.seen&&p<60?' low':'')},el('i',{style:`width:${p}%`}))))})));
+  const ht=hist.length?el('table',{},el('thead',{},el('tr',{},el('th',{},'Fecha'),el('th',{},'Nota'),el('th',{},'Aciertos'),el('th',{},'Modo'))),
+    el('tbody',{},hist.slice(-10).reverse().map(h=>el('tr',{},el('td',{},new Date(h.ts).toLocaleDateString('es-VE',{day:'numeric',month:'short'})),el('td',{},h.g.toFixed(1)+' / 20'),el('td',{},`${h.n} / ${h.tot}`),el('td',{},h.mode||'')))))
+    :el('p',{class:'hint'},'Aún no has terminado ningún quiz.');
+  let armed=false;const reset=el('button',{class:'btn danger',type:'button'},'Borrar mi progreso');
+  reset.onclick=()=>{if(!armed){armed=true;reset.textContent='Toca otra vez para confirmar';return}prog={};hist=[];saveProg();render()};
+  app.append(el('section',{class:'card'},el('h2',{},'Dominio por clase'),el('p',{class:'hint'},'Se guarda solo en este navegador.'),el('div',{class:'scroll'},tb)),
+    el('section',{class:'card'},el('h2',{},'Últimos quizzes'),el('div',{class:'scroll'},ht),reset));
+}
+
+/* ---------- banco personal ---------- */
+function bankView(){
+  const list=el('div');const b=bank();
+  [...new Set(b.map(q=>q.clase))].sort((a,c)=>a-c).forEach(c=>{
+    const det=el('details',{},el('summary',{},`Clase ${c} (${b.filter(q=>q.clase===c).length} preguntas)`));
+    b.filter(q=>q.clase===c).forEach(q=>{const mine=extra.includes(q);
+      const item=el('div',{class:'qitem'},el('span',{},el('span',{class:'tag'},q.tema+' · '+q.tipo),el('br'),q.q));
+      if(mine)item.append(el('button',{class:'btn quiet',onclick:()=>{extra=extra.filter(x=>x!==q);saveExtra();render()}},'Quitar'));
+      det.append(item)});
+    list.append(det)});
+  const f={},mk=(id,lab,node)=>el('label',{class:'f',for:id},lab,node);
+  f.clase=el('input',{type:'number',id:'fc',min:1,value:7});
+  f.tema=el('input',{type:'text',id:'ft',placeholder:'Ej. Potestad sancionadora'});
+  f.tipo=el('select',{id:'fy'},el('option',{value:'mc'},'Selección simple'),el('option',{value:'multi'},'Selección múltiple'),el('option',{value:'tf'},'Verdadero o falso'));
+  f.q=el('textarea',{id:'fq'});f.o=el('textarea',{id:'fo',placeholder:'Una opción por línea'});
+  f.a=el('input',{type:'text',id:'fa',placeholder:'Ej. 2 (o 1,3 en múltiple). Cuenta desde 1.'});f.e=el('textarea',{id:'fe'});
+  const msg=el('p',{class:'msg',role:'status'});
+  const add=el('button',{class:'btn primary',type:'button'},'Agregar pregunta');
+  add.onclick=()=>{
+    let o=f.o.value.split('\n').map(s=>s.trim()).filter(Boolean);if(f.tipo.value==='tf')o=['Verdadero','Falso'];
+    const a=f.a.value.split(',').map(s=>parseInt(s,10)-1).filter(x=>x>=0&&x<o.length);
+    if(!f.q.value.trim()||o.length<2||!a.length){msg.className='msg err';return msg.textContent='Falta el enunciado, al menos dos opciones o una respuesta válida.'}
+    extra.push({clase:+f.clase.value||1,tema:f.tema.value.trim()||'General',tipo:f.tipo.value,q:f.q.value.trim(),o,a:f.tipo.value==='multi'?a:a[0],e:f.e.value.trim()||'Ver el resumen.'});
+    saveExtra();render()};
+  const exp=el('textarea',{id:'fx',readonly:true});exp.value=JSON.stringify(extra,null,1);
+  const imp=el('textarea',{id:'fi',placeholder:'Pega aquí un arreglo JSON de preguntas'});
+  const impb=el('button',{class:'btn',type:'button'},'Importar');
+  impb.onclick=()=>{try{const x=JSON.parse(imp.value);if(!Array.isArray(x))throw 0;extra=extra.concat(x.filter(q=>q&&typeof q.q==='string'&&Array.isArray(q.o)&&q.a!==undefined).map(q=>({clase:+q.clase||1,tema:String(q.tema||'General'),tipo:['mc','multi','tf'].includes(q.tipo)?q.tipo:'mc',q:q.q,o:q.o.map(String),a:q.a,e:String(q.e||'Ver el resumen.')})));saveExtra();render()}catch(e){msg.className='msg err';msg.textContent='El JSON no es válido.'}};
+  app.append(el('section',{class:'card'},el('h2',{},`Banco actual: ${b.length} preguntas`),el('p',{class:'hint'},'Las preguntas que agregues aquí son tuyas y se guardan solo en este navegador.'),list),
+    el('section',{class:'card'},el('h2',{},'Agregar una pregunta'),mk('fc','Clase',f.clase),mk('ft','Tema',f.tema),mk('fy','Tipo',f.tipo),mk('fq','Enunciado',f.q),mk('fo','Opciones (verdadero o falso las genera solo)',f.o),mk('fa','Respuesta correcta (número de opción)',f.a),mk('fe','Explicación',f.e),add,msg),
+    el('section',{class:'card'},el('h2',{},'Exportar e importar'),mk('fx','Tus preguntas (JSON)',exp),mk('fi','Importar',imp),impb));
+}
+
+/* ---------- atajos de teclado ---------- */
+document.addEventListener('keydown',ev=>{
+  if(!run||run.done||st.tab!=='quiz'||ev.ctrlKey||ev.metaKey||ev.altKey)return;
+  const t=ev.target;if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)&&t.type!=='checkbox')return;
+  const k=ev.key.toLowerCase(),q=run.qs[run.i];
+  const idx='1234567890'.includes(k)&&k.length===1?(+k||10)-1:'abcdefgh'.includes(k)&&k.length===1?'abcdefgh'.indexOf(k):-1;
+  if(idx>=0&&idx<q.o.length){const oi=run.order[run.i][idx];if(oi!==undefined){ev.preventDefault();choose(oi)}return}
+  if(k==='enter'&&!(t&&t.tagName==='BUTTON')){ev.preventDefault();advance()}
+  else if(k==='arrowright'&&run.i<run.qs.length-1){ev.preventDefault();go(run.i+1)}
+  else if(k==='arrowleft'&&run.i>0){ev.preventDefault();go(run.i-1)}
+});
+
+render();
+</script>
+</body>
+</html>
